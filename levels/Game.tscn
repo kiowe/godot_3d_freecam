@@ -1,0 +1,82 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://levels/test_room.tscn" type="PackedScene" id=1]
+[ext_resource path="res://style/def_theme.tres" type="Theme" id=3]
+[ext_resource path="res://style/fonts/Baron Neue.otf" type="DynamicFontData" id=4]
+
+[sub_resource type="GDScript" id=4]
+script/source = "extends Node
+
+func _ready():
+	G.pause(0)
+
+func _input(e):
+	if e is InputEventKey:
+		if e.pressed:
+			if e.scancode == KEY_ESCAPE:
+				G.pause()
+"
+
+[sub_resource type="DynamicFont" id=3]
+extra_spacing_top = 3
+font_data = ExtResource( 4 )
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 0.647059, 0.321569, 0.321569, 1 )
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.388235, 0.14902, 0.14902, 1 )
+border_color = Color( 0, 0, 0, 1 )
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_size = 1
+
+[node name="Game" type="Node"]
+script = SubResource( 4 )
+
+[node name="World" type="Spatial" parent="."]
+
+[node name="test_room" parent="World" instance=ExtResource( 1 )]
+transform = Transform( 0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0, 0, 0 )
+
+[node name="UI" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="UI"]
+margin_top = 32.0
+margin_right = 84.0
+margin_bottom = 56.0
+theme = ExtResource( 3 )
+custom_colors/font_color = Color( 0.713726, 0.466667, 0.466667, 1 )
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = 98
+text = "HEALTH"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HP" type="ProgressBar" parent="UI"]
+margin_left = 4.0
+margin_top = 5.0
+margin_right = 147.0
+margin_bottom = 29.0
+custom_colors/font_color = Color( 0.807843, 0.807843, 0.807843, 1 )
+custom_fonts/font = SubResource( 3 )
+custom_styles/fg = SubResource( 2 )
+custom_styles/bg = SubResource( 1 )
+value = 100.0
+__meta__ = {
+"_edit_use_anchors_": false
+}

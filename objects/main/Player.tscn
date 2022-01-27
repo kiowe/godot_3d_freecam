@@ -1,0 +1,248 @@
+[gd_scene load_steps=9 format=2]
+
+[sub_resource type="GDScript" id=3]
+script/source = "extends KinematicBody
+
+var SPEED = 3
+
+var vel = Vector3()
+var state = ''
+var anim = ''
+var move_speed = 0
+var rot_y = 0
+
+func _ready():
+	G.Player = self
+	S('idle', 'idle')
+
+func _physics_process(delta):
+	vel.x = 0
+	vel.z = 0
+	vel.y -= 0.2
+	
+	if move_speed:
+		vel.z = move_speed * SPEED
+		vel = vel.rotated(Vector3.UP, rotation.y)
+		S('move', 'move')
+	else:
+		S('idle', 'idle')
+	
+	vel = move_and_slide(vel, Vector3.UP, true)
+
+func S(s, a):
+	if s && s != state:
+		state = s
+	if a && a != anim:
+		$AnimationPlayer.play(a, 0.2)
+		anim = a
+
+func control():
+	if Input.is_action_pressed(\"move_forward\"):
+		move_speed = -1
+		rot_y = 0
+	elif Input.is_action_pressed(\"move_left\"):
+		move_speed = -1
+		rot_y = PI/2
+	elif Input.is_action_pressed(\"move_backward\"):
+		move_speed = -1
+		rot_y = -PI
+	elif Input.is_action_pressed(\"move_right\"):
+		move_speed = -1
+		rot_y = -PI/2
+	else:
+		move_speed = 0
+	
+	if Input.is_action_just_pressed(\"jump\") and is_on_floor():
+		vel.y += 7
+	
+	if Input.is_action_pressed(\"run\"):
+		SPEED = 6
+	else:
+		SPEED = 3
+	
+
+func turn(y, delta):
+	if move_speed:
+		transform.basis = Basis(transform.basis.get_rotation_quat().slerp(Basis(Vector3.UP, y + rot_y).get_rotation_quat(), 5 * delta))
+"
+
+[sub_resource type="BoxShape" id=14]
+extents = Vector3( 0.43014, 1.37813, 0.108444 )
+
+[sub_resource type="SphereMesh" id=4]
+radius = 0.5
+height = 1.0
+
+[sub_resource type="CubeMesh" id=12]
+size = Vector3( 0.35, 0.9, 0.15 )
+
+[sub_resource type="CubeMesh" id=8]
+size = Vector3( 0.9, 0.15, 0.15 )
+
+[sub_resource type="CubeMesh" id=15]
+size = Vector3( 1, 0.15, 0.15 )
+
+[sub_resource type="Animation" id=16]
+resource_name = "idle"
+length = 2.0
+loop = true
+tracks/0/type = "transform"
+tracks/0/path = NodePath("ArmL")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = PoolRealArray( 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0.0114741, 0, 0, 0, 0, 1, 1, 1, 1, 1.99892, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1 )
+tracks/1/type = "transform"
+tracks/1/path = NodePath("ArmR")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = PoolRealArray( 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0.011, 0, 0, 0, 0, 1, 1, 1, 1, 2.00109, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1 )
+tracks/2/type = "transform"
+tracks/2/path = NodePath("LegL")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = PoolRealArray( 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1 )
+tracks/3/type = "transform"
+tracks/3/path = NodePath("LegR")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = PoolRealArray( 0, 1, 0.00422025, 0.00368774, 0.00125295, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0.00422025, 0.00368774, 0.00125295, 0, 0, 0, 1, 1, 1, 1 )
+
+[sub_resource type="Animation" id=17]
+resource_name = "move"
+length = 1.1
+loop = true
+step = 0.0
+tracks/0/type = "transform"
+tracks/0/path = NodePath("ArmL")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = PoolRealArray( 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0.256802, 1, 0, 0, 0.275704, -0.173536, 0, 0, 0.984827, 1, 1, 1, 0.53493, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0.835696, 1, 0, 0, -0.215293, 0.138447, 0, 0, 0.99037, 1, 1, 1, 1.09761, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1 )
+tracks/1/type = "transform"
+tracks/1/path = NodePath("ArmR")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = PoolRealArray( 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0.256802, 1, 0, 0, -0.264121, 0.172256, 0, 0, 0.985052, 1, 1, 1, 0.533191, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0.835696, 1, 0, 0, 0.216005, -0.136623, 0, 0, 0.990623, 1, 1, 1, 1.09761, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1 )
+tracks/2/type = "transform"
+tracks/2/path = NodePath("LegR")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = PoolRealArray( 0, 1, 0.00422025, 0.00368774, 0.00125295, 0, 0, 0, 1, 1, 1, 1, 0.256579, 1, 0.00422025, 0.00368774, 0.00125295, -0.119366, 0, 0, 0.99285, 1, 1, 1, 0.532408, 1, 0.00422025, 0.00368774, 0.00125295, 0, 0, 0, 1, 1, 1, 1, 0.839713, 1, 0.00422025, 0.00368774, 0.00125295, 0.147896, 0, 0, 0.989003, 1, 1, 1, 1.09593, 1, 0.00422025, 0.00368774, 0.00125295, 0, 0, 0, 1, 1, 1, 1 )
+tracks/3/type = "transform"
+tracks/3/path = NodePath("LegL")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = PoolRealArray( 0.00203761, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0.254701, 1, 0, 0, 0, 0.119296, 0, 0, 0.992859, 1, 1, 1, 0.531816, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0.829308, 1, 0, 0, 0, -0.143899, 0, 0, 0.989592, 1, 1, 1, 1.09761, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1 )
+tracks/4/type = "transform"
+tracks/4/path = NodePath("Body")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = PoolRealArray( 0.00203761, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0.256739, 1, 0, 0, 0, -0.024818, 0.0504058, -0.0198977, 0.998222, 1, 1, 1, 0.531816, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0.84152, 1, 0, 0, 0, -0.0231704, -0.0522435, -0.00121248, 0.998365, 1, 1, 1, 1.09761, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1 )
+tracks/5/type = "transform"
+tracks/5/path = NodePath("Head")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = PoolRealArray( 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0.25, 1, 0.0440769, -0.0107723, -0.0720282, 0, 0, 0, 1, 1, 1, 1, 0.530744, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0.832719, 1, 0, -0.00965762, -0.0648726, 0, 0, 0, 1, 1, 1, 1, 1.08894, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1 )
+
+[node name="Player" type="KinematicBody"]
+script = SubResource( 3 )
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0238882, 0 )
+shape = SubResource( 14 )
+
+[node name="Head" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.00481838, -0.0323663 )
+
+[node name="Skeleton" type="Skeleton" parent="Head"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.093, 0 )
+
+[node name="Head" type="MeshInstance" parent="Head/Skeleton"]
+transform = Transform( 0.588631, 0, 0, 0, -2.49482e-08, -0.570749, 0, 0.570592, -2.49414e-08, 0, 0, 0 )
+mesh = SubResource( 4 )
+skeleton = NodePath("../../..")
+material/0 = null
+
+[node name="Body" type="Spatial" parent="."]
+transform = Transform( 0.998725, 0.0017366, -0.0504568, -0.000606033, 0.999749, 0.0224134, 0.050483, -0.0223542, 0.998475, 0, 0, 0 )
+
+[node name="Skeleton" type="Skeleton" parent="Body"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.285, 0 )
+
+[node name="Body" type="MeshInstance" parent="Body/Skeleton"]
+transform = Transform( 1.17726, 0, 0, 0, 1.1415, 0, 0, 0, 1.14118, 0, 0, 0.001 )
+mesh = SubResource( 12 )
+skeleton = NodePath("../../..")
+material/0 = null
+
+[node name="ArmL" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.990863, -0.134872, 0, 0.134872, 0.990863, 0, 0, -0.104849 )
+
+[node name="Skeleton" type="Skeleton" parent="ArmL"]
+transform = Transform( 0.0871558, -0.996195, 0, 0.996195, 0.0871558, 0, 0, 0, 1, -0.363, 0.296, 0 )
+
+[node name="ArmL" type="MeshInstance" parent="ArmL/Skeleton"]
+transform = Transform( 1.14222, 0, 0, 0, 1.17656, 0, 0, 0, 1.14118, 0, 0, 0 )
+mesh = SubResource( 8 )
+skeleton = NodePath("../../..")
+material/0 = null
+
+[node name="ArmR" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.990995, 0.133896, 0, -0.133896, 0.990995, 0, 0, 0.105833 )
+
+[node name="Skeleton" type="Skeleton" parent="ArmR"]
+transform = Transform( -0.0871559, -0.996195, 0, 0.996195, -0.0871559, 0, 0, 0, 1, 0.374, 0.292, 0 )
+
+[node name="ArmR" type="MeshInstance" parent="ArmR/Skeleton"]
+transform = Transform( 1.14179, 0, 0, 0, 1.17698, 0, 0, 0, 1.14118, 0, 0, 0 )
+mesh = SubResource( 8 )
+skeleton = NodePath(".")
+material/0 = null
+
+[node name="LegL" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.989474, 0.144709, 0, -0.144709, 0.989474, 0, 0, 0 )
+
+[node name="Skeleton" type="Skeleton" parent="LegL"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.107, -0.828, 0 )
+
+[node name="LegL" type="MeshInstance" parent="LegL/Skeleton"]
+transform = Transform( -5.14597e-08, -1.17726, 0, 1.1415, -4.98965e-08, 0, 0, 0, 1.14118, 0, 0, 0 )
+mesh = SubResource( 15 )
+skeleton = NodePath("../../../ArmR/Skeleton/ArmR")
+material/0 = null
+
+[node name="LegR" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.989658, -0.143447, 0, 0.143447, 0.989658, 0.00422025, 0.00368774, 0.00125295 )
+
+[node name="Skeleton" type="Skeleton" parent="LegR"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.125, -0.828, 0 )
+
+[node name="LegR" type="MeshInstance" parent="LegR/Skeleton"]
+transform = Transform( -5.14597e-08, -1.17726, 0, 1.1415, -4.98965e-08, 0, 0, 0, 1.14118, 0, 0, 0 )
+mesh = SubResource( 15 )
+skeleton = NodePath("../../../ArmR/Skeleton/ArmR")
+material/0 = null
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "move"
+anims/idle = SubResource( 16 )
+anims/move = SubResource( 17 )
